@@ -71,10 +71,12 @@
 
       .nav {
         grid-column: 1 / 3;
+        grid-row: 2 / 4;
       }
 
       .content {
         grid-column: 3 / 11; 
+        grid-row: 2 / 4;
       }
 
       .sidebar {
@@ -279,7 +281,7 @@
 
     /* Complete: return trimmed + lowercase string; handle cancel/empty safely; if raw is null, it should return an empty string to avoid errors on .trim() */
     function normalizeType(raw){
-        if (variable == null){
+        if (raw == null){
             return "";
         }
         return raw.trim().toLowerCase();
@@ -287,7 +289,7 @@
 
     /* Complete: return true only for coffee, sandwich, salad */
     function isValidType(t){
-        if (t == coffee || t == sandwich || t == bagel){
+        if (t == "coffee" || t == "sandwich" || t == "bagel"){
             return true;
         }
         return false;
@@ -295,7 +297,7 @@
 
     /* Complete: use a for loop to repeat an icon up to 10 times */
     function iconsFor(type, qty){
-      const map = { coffee: "☕", sandwich: "🥪", salad: "🥗" };
+      const map = { coffee: "☕", sandwich: "🥪", bagel: "🥯" };
       const icon = map[type] || "✅";
       const cap = Math.min(qty, 10);
       let line = "";
@@ -311,12 +313,33 @@
     function processQuote(type, qty, isStudent, ecoCup){
       const unitPrice = PRICES[type];
       // compute subtotal 
+      let subtotal = qty * unitPrice;
+
       // compute studentDiscount (10% of subtotal if isStudent)
+      let studentDiscount = 0;
+      if (isStudent){
+        studentDiscount = 0.1 * subtotal;
+      }
+      
       // ecoFee is ECO_FEE only if type is coffee AND ecoCup is true
+      let ecoFee = 0;
+      if (type == "coffee" && ecoCup){
+        const ecoFee = ECO_FEE;
+      }
+     
       // bulkDiscount is BULK_OFF only if qty >= BULK_QTY
+      let bulkDiscount = 0;
+      if (qty >= BULK_QTY){
+        const bulkDiscount = BULK_OFF;
+      }
+      
       // taxable amount is subtotal - studentDiscount + ecoFee - bulkDiscount
+      let taxableTotal = subtotal - studentDiscount + ecoFee - bulkDiscount;
       // compute tax and total
+
+      const tax = 0.05 * taxableTotal;
       // return an object with all values
+      const total = taxableTotal + tax;
 
       return { unitPrice, subtotal, studentDiscount, ecoFee, bulkDiscount, tax, total };
     }
@@ -346,10 +369,12 @@ TOTAL:          ${money(calc.total)}
 
     /* Complete: show a clear error in #display */
     function showError(msg){
+        document.getElementById("display").textContent = msg;
     }
 
     /* Complete: reset #display to "No order data." */
     function resetUI(){
+        document.getElementById("display").textContent = "No order data.";
     }
 
     async function loadWeather(){
@@ -376,11 +401,11 @@ TOTAL:          ${money(calc.total)}
       resetUI();
 
       document.getElementById("calcBtn").addEventListener("click", () => {
-        const type = normalizeType(prompt("Enter item type: coffee / sandwich / salad"));
+        const type = normalizeType(prompt("Enter item type: coffee / sandwich / bagel"));
         const qty = Number(prompt("Enter quantity (1–10):"));
 
         if (!isValidType(type)){
-          showError("Item must be coffee, sandwich, or salad.");
+          showError("Item must be coffee, sandwich, or bagel.");
           return;
         }
 
@@ -389,10 +414,16 @@ TOTAL:          ${money(calc.total)}
            - must be between 1 and 10
            - if invalid: showError(...) and stop
         */
+       if (!Number.isInteger(qty) || qty > 10 || qty < 1){
+        showError("Invalid Quantity");
+        return;
+       }
+       
 
         /* Add a confirm dialog here for student discount:
            Store the result in a variable named isStudent.
         */
+        const isStudent = confirm("Apply student discount?");
 
         const ecoCup = (type === "coffee") ? confirm("Add reusable cup? (+$1.00)") : false;
 
