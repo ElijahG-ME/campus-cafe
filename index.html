@@ -13,12 +13,12 @@
 
     :root{
       /* Complete the color palette (change values only) */
-      --bg:;
-      --panel:;
-      --text:;
-      --muted:;
-      --border:;
-      --accent:;
+      --bg: #96eeff;
+      --panel: #6adcc7;
+      --text: #000000;
+      --muted: #320b0b;
+      --border: #074F57;
+      --accent: #0a41af;
       --radius: 16px;
     }
 
@@ -64,6 +64,32 @@
          Use grid-row to place sidebar above ads
 	 Can explicitly set .sidebar { grid-row: 2; } and .ads { grid-row: 3; } (or similar  depending on their header span) to ensure they stack vertically in the right-hand column
       */
+
+      .head {
+        grid-column: 1 / -1;
+      }
+
+      .nav {
+        grid-column: 1 / 3;
+      }
+
+      .content {
+        grid-column: 3 / 11; 
+      }
+
+      .sidebar {
+        grid-column: 11 / -1;
+        grid-row: 2;
+      }
+
+      .ads {
+        grid-column: 11 / -1;
+        grid-row: 3;
+      }
+
+      .footer { 
+        grid-column: 1 / -1;
+      }
     }
 
     .head img{
@@ -80,10 +106,16 @@
 
     /* Complete nested menu grid here (mobile: 1 column) */
     .menu-grid{
+        display: grid;
+        grid-template-columns: 1fr;
     }
 
     /* Complete breakpoint for menu cards (desktop: 3 columns) */
     @media (min-width: 900px){
+        .menu-grid{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 
     article{
@@ -146,10 +178,10 @@
 
       <!-- Add a banner image here. -->
       <img
-        src=" "
+        src="https://www.dubaiparksandresorts.com/sites/default/files/2024-11/DSC09435%201.JPG"
         alt="Coffee on a table"
       />
-      <p class="muted">Banner photo: Unsplash (replace with your own + attribution if required).</p>
+      <p class="muted">Banner photo: Cafe Image from dubaiparksandresorts.com.</p>
     </header>
 
     <nav class="nav panel">
@@ -167,7 +199,23 @@
         <p class="muted">Display cards only. Inputs are collected using dialogs.</p>
 
         <div class="menu-grid">
-          <!-- Add 3 <article> cards here (Coffee, Sandwich, Salad). -->
+            <article> 
+                <h3>Coffee</h3>
+                <p>Freshly brewed coffee sourced from south american farms. </p>
+                <h4>$3.25</h4>
+            </article>
+
+            <article>
+                <h3>Sandwich</h3>
+                <p>Ham and cheese sandwich on rye.</p>
+                <h4>$8.50</h4>
+            </article>
+
+            <article>
+                <h3>Bagel</h3>
+                <p>Bagel of your choice with butter or cream cheese.</p>
+                <h4>$7.25</h4>
+            </article>
         </div>
       </section>
 
@@ -181,7 +229,12 @@
         </div>
       </section>
 
-      <!-- Add the About section here (2–4 sentences). Create with the appropriate ID to ensure the navigation link <a href="#about"> actually works -->
+      <section id="about">
+        <h3>About Us</h3>
+        <p>This is our website for Campus Cafe. You can view our menu, place an order, or look up prices and ingredients all on this site. 
+            Our aim is to provide the best cafe on the campus.
+        </p>
+      </section>
 
     </main>
 
@@ -196,12 +249,13 @@
 	<!-- Add the weather display box here:
      	Create a div with id="weatherBox" and class="weather".
      	Set its starting text to: Loading weather... -->
+        <div id="weatherBox" class="weather">Loading weather...</div>
     </aside>
 
     <footer class="footer panel">
       <p>&copy; 2026 Campus Café</p>
       <p class="muted">Weather data by Open-Meteo (CC BY 4.0).</p>
-      <p class="muted">Banner photo attribution goes here (if required).</p>
+      <p class="muted">Cafe Image from dubaiparksandresorts.com.</p>
     </footer>
 
   </div>
@@ -212,7 +266,7 @@
        Complete the marked functions and the Get Quote logic.
        ========================================================= */
 
-    const PRICES = { coffee: 3.25, sandwich: 8.50, salad: 7.25 };
+    const PRICES = { coffee: 3.25, sandwich: 8.50, bagel: 7.25 };
     const TAX_RATE = 0.05;
     const STUDENT_RATE = 0.10;
     const ECO_FEE = 1.00;
@@ -225,10 +279,18 @@
 
     /* Complete: return trimmed + lowercase string; handle cancel/empty safely; if raw is null, it should return an empty string to avoid errors on .trim() */
     function normalizeType(raw){
+        if (variable == null){
+            return "";
+        }
+        return raw.trim().toLowerCase();
     }
 
     /* Complete: return true only for coffee, sandwich, salad */
     function isValidType(t){
+        if (t == coffee || t == sandwich || t == bagel){
+            return true;
+        }
+        return false;
     }
 
     /* Complete: use a for loop to repeat an icon up to 10 times */
@@ -239,13 +301,16 @@
       let line = "";
       //write the FOR loop that repeats icon cap times
       // for (...) { line += icon; }
+      for (let i = 0; i < cap; i++){
+        line += icon;
+      }
       return line;
     }
 
     /* Complete: implement full math rules; unitPrice line is provided */
     function processQuote(type, qty, isStudent, ecoCup){
       const unitPrice = PRICES[type];
-      // compute subtotal
+      // compute subtotal 
       // compute studentDiscount (10% of subtotal if isStudent)
       // ecoFee is ECO_FEE only if type is coffee AND ecoCup is true
       // bulkDiscount is BULK_OFF only if qty >= BULK_QTY
@@ -253,7 +318,7 @@
       // compute tax and total
       // return an object with all values
 
-      // return { unitPrice, subtotal, studentDiscount, ecoFee, bulkDiscount, tax, total };
+      return { unitPrice, subtotal, studentDiscount, ecoFee, bulkDiscount, tax, total };
     }
 
     function buildReceipt(type, qty, isStudent, ecoCup, calc){
